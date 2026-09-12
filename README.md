@@ -1,97 +1,137 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Ledgr
 
-# Getting Started
+Offline-first personal expense tracker (React Native CLI). Money stays on-device in SQLite; no cloud sync.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Brand assets live in `assets/brand/` (app icon, splash logo, onboarding hero). Native splash uses `react-native-bootsplash` (teal `#0A4F4C`).
 
-## Step 1: Start Metro
+## Architecture
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+| Layer    | Location                                            | Role                                                    |
+| -------- | --------------------------------------------------- | ------------------------------------------------------- |
+| Features | `src/features/<feature>/{screens,components,hooks}` | Thin screens; local UI + data hooks                     |
+| Domain   | `src/domain/*`                                      | Pure logic: money, SMS rules, budgets, backup CSV/JSON  |
+| DB       | `src/db/*`                                          | op-sqlite connection, migrations, repositories, seed    |
+| Design   | `src/design/*`                                      | Tokens, theme, primitives, motion, Lucide Icon registry |
+| App      | `src/app/`                                          | Bootstrap, providers, navigation stacks                 |
+| i18n     | `src/i18n/`                                         | English / Arabic locales, RTL layout restart            |
+| Native   | `android/…/sms`, `src/native`                       | SMS_RECEIVED BroadcastReceiver + JS bridge              |
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Engineering guide: `CLAUDE.md`. Cursor rules: `.cursor/rules/` (adapted from Ejar; Ledgr-specific). Local-only git: never commit/push.
+
+Tabs: **Home | Transactions | Analytics | More**. Nested stacks for forms. App lock + onboarding gate in `AppBootstrap`. Language: **English / العربية** under More → Language (RTL switch restarts the app).
+
+## Schema overview
+
+SQLite schema v1 (`src/db/migrations/001_initial.ts`):
+
+- **accounts**, **categories**, **transactions** (integer minor units, soft delete)
+- **tags** / **transaction_tags** (UI under Add/Edit + More)
+- **budgets**, **subscriptions**, **sms_rules**, **sms_messages**, **merchant_aliases**
+- **settings**, **fx_rates**, indexes on list/occurred_at paths
+
+Analytics use **SQL aggregates only** (`AnalyticsRepository`) — no full-table JS scans for charts.
+
+## Tooling
 
 ```sh
-# Using npm
+npm install
+npm start                 # Metro
+npm run android           # Debug APK on device/emulator
+npm run verify            # typecheck + lint + jest
+```
+
+**Language:** UI strings live in `src/i18n/locales/` (en + ar). Changing between English and Arabic restarts the app when layout direction changes so RTL applies correctly.
+
+## Debug vs release (Android)
+
+### Debug
+
+```sh
 npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+`INTERNET` is declared so Metro / Flipper can talk to the device. **App features do not require network** — verify airplane mode after install.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+### Release APK (signed)
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+1. Generate a personal keystore (do **not** commit it):
 
 ```sh
-bundle install
+keytool -genkeypair -v -storetype PKCS12 \
+  -keystore android/app/release.keystore \
+  -alias ledgr \
+  -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-Then, and every time you update your native dependencies, run:
+2. Copy `android/keystore.properties.example` → `android/keystore.properties` and fill passwords. Both `keystore.properties` and `*.keystore` / `*.jks` are gitignored.
+
+3. Build:
 
 ```sh
-bundle exec pod install
+cd android
+./gradlew assembleRelease
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+APK: `android/app/build/outputs/apk/release/app-release.apk`
+
+Install:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+adb install -r android/app/build/outputs/apk/release/app-release.apk
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Release signing is **fail-closed**: if `android/keystore.properties` is missing/incomplete or the keystore file does not exist, `assembleRelease` / `bundleRelease` throws a `GradleException`. Debug builds do not need a release keystore. There is **no** debug-keystore fallback for release.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+R8/ProGuard is enabled for release; keep rules live in `android/app/proguard-rules.pro` (op-sqlite, reanimated, mmkv, notifee, custom SMS + receipts packages under `com.ledgr.app`).
 
-## Step 3: Modify your app
+## SMS rules how-to
 
-Now that you have successfully run the app, let's make changes!
+1. **Android**: More → SMS inbox → grant READ_SMS / RECEIVE_SMS when prompted → **Import from SMS**. Permissions are requested only on that action (not at cold start).
+2. Real-time: `SmsReceiver` queues `SMS_RECEIVED` into SharedPreferences and emits to JS when the app is alive; pending drain runs on bootstrap and on scan. Review alerts are normal notifications (no full-screen intent).
+3. **iOS**: More → Paste SMS import (no inbox API).
+4. Tune rules: Rule tester → Manage rules → Generate rule from a needs-review message.
+5. Starter bank/wallet rules seed on first launch (`seedSmsRules`).
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## Private distribution & privacy
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+Ledgr is intended for **private / sideloaded Android distribution**, not Play Store SMS policy compliance theater. Money and SMS stay on-device (SQLite + MMKV; no backend or telemetry).
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- **SMS** (`READ_SMS` / `RECEIVE_SMS`) remains available in private builds. Runtime prompts happen at inbox import / enable — not aggressively on cold start. Onboarding only explains the optional feature.
+- **Notifications** (`POST_NOTIFICATIONS`) are requested when enabling reminders or after SMS import (for review alerts).
+- **Lock-screen copy** defaults to redacted / generic titles. More → Notifications can opt into richer details (amounts, senders, subscription names). Secure lock screens still get a public redacted version for SMS review alerts.
+- **No `USE_FULL_SCREEN_INTENT`** — SMS review uses a normal notification the user taps.
 
-## Congratulations! :tada:
+## Backup / restore
 
-You've successfully run and modified your React Native App. :partying_face:
+More → Backup & export:
 
-### Now what?
+- **CSV** export/import of transactions
+- **JSON** full backup/restore, including recurring rules
+- **HTML** shareable report
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Files are written on-device and shared via the system share sheet — nothing is uploaded by the app.
+JSON backups use typed per-table schemas (`version: 2`); existing `version: 1`
+backups are migrated during validation. Restore shows a row-count preview,
+checks references before touching SQLite, requires destructive confirmation,
+and writes a pre-restore safety backup before the transactional replacement.
 
-# Troubleshooting
+## Performance fixtures (**DEV**)
+More → Dev tools → **Seed 10k transactions** (`src/db/seedLarge.ts`). Jest also benches `groupTransactionsByDay(10k)` under 500ms — see `PROGRESS.md`.
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Airplane-mode DoD
 
-# Learn More
+With airplane mode on (after any SMS permission was already granted if testing SMS):
 
-To learn more about React Native, take a look at the following resources:
+- Add/edit transactions, budgets, analytics, backup/export, app lock all work.
+- SMS inbox scan needs prior permission; live SMS still queues when radio allows SMS but no data.
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Operator checklist (steps + expected results + sign-off tables): **`DEVICE_MATRIX.md`**. Physical device run is still pending.
+
+## Docs
+
+- `TASKS.md` — phase checklist
+- `PROGRESS.md` — status + perf numbers
+- `DEVICE_MATRIX.md` — airplane / money / backup / release operator checklists
+- `DESIGN.md` — tokens + polish scores
+- `DECISIONS.md` — library choices
