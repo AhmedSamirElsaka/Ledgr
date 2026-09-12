@@ -1,0 +1,15 @@
+---
+description: State ownership, persistence, forms, and tests
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# State and testing
+
+- Keep transient UI state local and derive values instead of duplicating state.
+- Zustand + MMKV prefs are allowlisted for UI survival (period, last tab, lock prefs); add persisted fields only with a product need.
+- Durable money data lives in SQLite repositories — test domain pure functions and repository mappers with deterministic fixtures.
+- Mock native/SMS/filesystem boundaries, not internal implementation details.
+- Test behavior and state transitions; keep tests deterministic and focused.
+- Add regression coverage for bug fixes when practical.
+- Prefer `react-hook-form` + Zod for non-trivial forms when introducing new ones.

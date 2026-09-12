@@ -1,0 +1,14 @@
+---
+description: Lucide-first icon usage via design Icon registry
+globs: "**/*.{ts,tsx,svg}"
+alwaysApply: false
+---
+
+# Icons
+
+- Use `src/design/icons/Icon.tsx` for standard Lucide icons.
+- Pass sizes and semantic theme colors; do not hardcode icon hex values in feature code (category tint from DB is OK when displaying that category).
+- Add new glyphs to the closed `registry` in `Icon.tsx` — do not import Lucide ad hoc in features.
+- Verify glyph names instead of guessing.
+- Do not use raster images for inline UI icons.
+- Put accessibility labels on meaningful icon controls; mark decorative icons appropriately.

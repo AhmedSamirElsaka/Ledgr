@@ -1,0 +1,12 @@
+---
+description: Default Task/subagent model to Auto (inherit) unless the user says otherwise
+alwaysApply: true
+---
+
+# Subagent model policy
+
+When launching Task/subagents:
+
+- Pass `model: "inherit"` (Auto) by default.
+- Do **not** pick a specific named model unless the user explicitly requests a different model in that message.
+- If the user says something like "use composer", "use gpt", or names another listed model for agents, follow that instruction for that request only; afterwards revert to Auto/`inherit`.

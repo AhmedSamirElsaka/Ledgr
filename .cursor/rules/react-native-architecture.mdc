@@ -1,0 +1,31 @@
+---
+description: React Native architecture and module boundaries
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Architecture
+
+## Top-level layout
+
+```
+src/
+  app/              # providers, navigation, bootstrap
+  design/           # tokens, theme, primitives, motion, icons
+  domain/           # pure logic (money, SMS rules, periods, budgets)
+  db/               # SQLite, migrations, repositories, seed
+  features/         # product features (home, transactions, analytics, …)
+  lib/              # prefs, haptics, ids, notifications
+  store/            # Zustand UI stores
+  native/           # JS ↔ native bridges
+```
+
+## Rules
+
+- Put product screens/hooks/components under `src/features/<feature>/`.
+- Keep infrastructure (UI primitives, DB, domain, storage) outside `features/`.
+- Keep app composition in `src/app`.
+- Navigators should import feature screen entry points (barrel or `screens/`).
+- Prefer local state; persist only UI prefs that need survival across launches.
+- Do not create empty folders, placeholder screens, or nonexistent navigation routes.
+- Android is primary for SMS; do not invent iOS SMS inbox APIs.

@@ -1,0 +1,16 @@
+---
+description: Theme, shared UI, and accessibility rules
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Design system
+
+- `src/design/tokens/` + `createTheme` are the source for colors, spacing, radii, and typography.
+- Consume themes with `useTheme()`; support light and dark appearance.
+- In features use design primitives: `Text`, `Button`, `Input`, `Amount`, `Card`, `Sheet`, `Icon`, `EmptyState`, `ErrorState`, `Skeleton`.
+- Prefer token-driven inline styles or small colocated style objects — never raw hex / magic spacing in feature UI (seed category colors are allowed in `src/db/seed.ts`).
+- Never set `lineHeight` anywhere (theme tokens, StyleSheet, inline styles, or Text props). Let the platform default line height stand.
+- Preserve dynamic text, touch targets (`theme.touchTarget`), roles, and useful accessibility labels.
+- Motion must respect reduce-motion via `ThemeProvider` / motion tokens.
+- User-facing copy lives in `src/i18n/locales/` (`en.ts` / `ar.ts`). English and Arabic are supported; switching language that flips layout direction restarts the app for correct RTL/LTR.

@@ -1,0 +1,16 @@
+---
+description: Shared versus feature-local component placement
+globs: "src/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Component placement
+
+- Put design primitives in `src/design/primitives/` (and motion/icons under `src/design/`).
+- Put product UI in `src/features/<feature>/components/`.
+- Keep screens in each feature's `screens/` (one screen per file).
+- Keep screen data/handlers in each feature's `hooks/`.
+- Put pure business logic in `src/domain/`; put DB access in `src/db/repositories/`.
+- Promote a feature component to `src/design/` only after real cross-feature reuse.
+- Do not import another feature's private components; use that feature's public exports (`index.ts` or documented screen entry).
+- Keep props narrow and typed; prefer composition over many boolean variants.

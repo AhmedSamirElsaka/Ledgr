@@ -1,0 +1,15 @@
+---
+description: Core Ledgr quality and maintainability standards
+alwaysApply: true
+---
+
+# Project foundations
+
+- Use strict TypeScript; avoid `any`, unsafe casts, non-null assertions, dead code, and speculative abstractions.
+- Offline-first personal finance: SQLite + MMKV only — no backend, telemetry, or fake API URLs.
+- Use theme tokens and shared design primitives instead of hardcoded visual values in feature UI.
+- Organize product code under `src/features/<feature>/` with thin `screens/`, local `components/`, and `hooks/`. Keep pure logic in `src/domain/` and persistence in `src/db/`.
+- Prefer local React state; Zustand for shared UI prefs only. Do not invent unrelated routes or placeholders.
+- Use npm commands. Run `npm run verify` after substantive changes.
+- Do not edit lockfiles, generated native resources, or build output unless explicitly requested.
+- Never commit or push — this repo stays local-only (see `local-only-git.mdc`).

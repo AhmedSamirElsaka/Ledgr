@@ -1,0 +1,40 @@
+---
+description: Keep screen files thin via local components and data hooks
+globs: "src/features/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Screen composition
+
+Screen files stay thin. Do not grow multi-screen barrels or 400+ line screen modules.
+
+## Layout
+
+```
+src/features/<feature>/
+  screens/<Name>Screen.tsx
+  components/<Name>.tsx
+  hooks/use<Name>.ts
+  index.ts
+```
+
+## Rules
+
+- One exported screen per `screens/*Screen.tsx` file.
+- Move JSX sections into `components/`.
+- Move fetching, selectors, derived values, and handlers into `hooks/`.
+- Keep styles colocated with the owning file.
+- Navigators import from feature barrels or `screens/` — not mega `*Screens.tsx`.
+- Do not reach into another feature's private internals; use that feature's public export.
+
+## Target size
+
+- Prefer screens under ~200 lines.
+- Prefer components under ~150 lines.
+- Prefer hooks under ~120 lines.
+
+## Loading
+
+- Use design `Skeleton` / `EmptyState` / `ErrorState` for fetch loading / empty / retry.
+- Use `Button` disabled + label for submits and mutations.
+- Do not show “empty” or “unavailable” while the first load is still in flight.

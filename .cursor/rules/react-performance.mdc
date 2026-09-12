@@ -1,0 +1,14 @@
+---
+description: Practical React Native runtime performance
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Performance
+
+- Keep state near consumers and effects correct with complete cleanup.
+- Keep render functions pure and constants outside components.
+- Use memoization only when computation or stable identity matters.
+- Use virtualized lists with stable keys for unbounded data (transactions, SMS inbox).
+- Prefer repository queries with limits over loading entire tables into memory.
+- Measure before trading clarity for optimization.
