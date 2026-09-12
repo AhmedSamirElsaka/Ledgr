@@ -11,6 +11,9 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		09052C665AD4452DA33013ED /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD829D9B90FD46178A33A421 /* BootSplash.storyboard */; };
+		5FFE211A630A4F06A345A549 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD448351540E4311918FDC31 /* Colors.xcassets */; };
+		A1B2C3D44E5F678901234567 /* LedgrReceiptPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D44E5F678901234568 /* LedgrReceiptPicker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +27,9 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ExpenseTracker/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ExpenseTracker/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		AD829D9B90FD46178A33A421 /* BootSplash.storyboard */ = {isa = PBXFileReference; name = "BootSplash.storyboard"; path = "ExpenseTracker/BootSplash.storyboard"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AD448351540E4311918FDC31 /* Colors.xcassets */ = {isa = PBXFileReference; name = "Colors.xcassets"; path = "ExpenseTracker/Colors.xcassets"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = folder.assetcatalog; explicitFileType = undefined; includeInIndex = 0; };
+		A1B2C3D44E5F678901234568 /* LedgrReceiptPicker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = LedgrReceiptPicker.m; path = ExpenseTracker/LedgrReceiptPicker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,9 +49,12 @@
 			children = (
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
+				A1B2C3D44E5F678901234568 /* LedgrReceiptPicker.m */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				AD829D9B90FD46178A33A421 /* BootSplash.storyboard */,
+				AD448351540E4311918FDC31 /* Colors.xcassets */,
 			);
 			name = ExpenseTracker;
 			sourceTree = "<group>";
@@ -159,6 +168,8 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				09052C665AD4452DA33013ED /* BootSplash.storyboard in Resources */,
+				5FFE211A630A4F06A345A549 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +256,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				A1B2C3D44E5F678901234567 /* LedgrReceiptPicker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,7 +283,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.expensetracker.app";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ledgr.app";
 				PRODUCT_NAME = ExpenseTracker;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -300,7 +312,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.expensetracker.app";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ledgr.app";
 				PRODUCT_NAME = ExpenseTracker;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
